@@ -3,6 +3,7 @@ package com.bankapp.app.account.service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 		
 	}
 
+	Logger logger = Logger.getLogger(ValidateAccount.class.getName());
 	@Override
 	public SavingsAccount createNewAccount(String accountHolderName, double accountBalance, boolean salary)
 			throws ClassNotFoundException, SQLException {
@@ -47,25 +49,23 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
 	@Override
 	public void deposit(SavingsAccount account, double amount) throws ClassNotFoundException, SQLException {
-		if (amount > 0) {
+		
 			double currentBalance = account.getBankAccount().getAccountBalance();
 			currentBalance += amount;
 			savingsAccountDAO.updateBalance(account.getBankAccount().getAccountNumber(), currentBalance);
 			//savingsAccountDAO.commit();
-		}else {
-			throw new InvalidInputException("Invalid Input Amount!");
-		}
+
 	}
+	
+	
 	@Override
 	public void withdraw(SavingsAccount account, double amount) throws ClassNotFoundException, SQLException {
 		double currentBalance = account.getBankAccount().getAccountBalance();
-		if (amount > 0 && currentBalance >= amount) {
-			currentBalance -= amount;
+		currentBalance -= amount;
 			savingsAccountDAO.updateBalance(account.getBankAccount().getAccountNumber(), currentBalance);
+			logger.info("this is after calling updatebalance");
 			//savingsAccountDAO.commit();
-		} else {
-			throw new InsufficientFundsException("Invalid Input or Insufficient Funds!");
-		}
+		 
 	}
 
 	
